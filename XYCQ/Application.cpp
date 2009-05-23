@@ -230,6 +230,8 @@ void Application::createSceneManager()
 	SceneNode *camNode = node->createChildSceneNode("PlayerCameraNode",Vector3(0,GlobalVariables::TheOneHeight/2.0,0));
 	camNode->attachObject(mCamera);
 	mRoot->getAutoCreatedWindow()->addViewport(mCamera,10);
+
+	mScene = new OgreMaxScene();
 }
 
 void Application::setupCollision()
@@ -350,22 +352,24 @@ void Application::setupSoundManager()
 	mSoundMgr->playSound(mBackSound);
 	mBackSound->mChannel->setVolume(GlobalVariables::BackSoundVolume);
 }
-// 设置场景
+
+//	create ogremax scene
 void Application::createScene()
 {
-	//	建立OgreMax场景
-	mScene = new OgreMaxScene();
-
-	mScene->initPG(mCamera,20000);
+	mScene->initPG(mCamera,200000);
 
 	mScene->initPGTrees(200,false);
 	mScene->setPGTree(Vector2(4000,100),Vector2(4500,100));
-	//mScene->initPGGrass(100,false);
-	//mScene->setPGGrass(200);
 
-	mScene->setPGHeightFunction((PM_TREE), &HeightFunction::getTerrainHeight);
+	mScene->initPGBushes(200,false);
+	mScene->setPGBush(Vector2(2000,100),Vector2(2500,100));
 
-	//mScene->addPGGrass(String("grass"),Vector2(2.0,2.0),Vector2(3.0,3.0),0.5,false);
+	mScene->initPGGrass(100,false);
+	mScene->setPGGrass(500);
+
+	mScene->setPGHeightFunction((PM_TREE), &getTerrainHeight);
+
+	mScene->addPGGrass(String("grass"),Vector2(50.0,60.0),Vector2(70.0,80.0),0.002,false);
 	mScene->Load("LuoHuaVillage.scene",mWindow,OgreMaxScene::NO_OPTIONS,mSceneMgr);
 	
 	Real xcam_pos = 4000;
