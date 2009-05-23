@@ -367,7 +367,7 @@ void Application::createScene()
 	mScene->initPGGrass(100,false);
 	mScene->setPGGrass(500);
 
-	mScene->setPGHeightFunction((PM_TREE), &getTerrainHeight);
+	mScene->setPGHeightFunction((PM_TREE), &HeightFunction::getTerrainHeight);
 
 	mScene->addPGGrass(String("grass"),Vector2(50.0,60.0),Vector2(70.0,80.0),0.002,false);
 	mScene->Load("LuoHuaVillage.scene",mWindow,OgreMaxScene::NO_OPTIONS,mSceneMgr);
