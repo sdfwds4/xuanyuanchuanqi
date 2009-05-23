@@ -5,6 +5,10 @@
 	Name="XYCQ"
 	ProjectGUID="{36377681-D2D8-41FA-800D-82D1273C67DE}"
 	RootNamespace="XYCQ"
+	SccProjectName="Svn"
+	SccAuxPath="Svn"
+	SccLocalPath="Svn"
+	SccProvider="SubversionScc"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
