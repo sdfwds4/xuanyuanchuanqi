@@ -37,6 +37,12 @@ private:
 	void windowResized(RenderWindow *rw);
 	void windowClosed(RenderWindow *rw);
 
+	//	get the height of terrain, used by the PG engine
+	inline float getTerrainHeight(float x, float z, void *extra)
+	{
+		return mListener->getTerrainHeight(x,z);
+	}
+
 	Root *mRoot;
 	OIS::Keyboard *mKeyboard;
 	OIS::Mouse *mMouse;
