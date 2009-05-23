@@ -1,4 +1,3 @@
-//#include "globalHeaders.h"
 #include "Application.h"
 #include "ApplicationListener.h"
 
@@ -13,8 +12,6 @@
 
 #pragma comment(lib,"OgreMax.lib")
 #pragma comment(lib,"PagedGeometry.lib")
-//#pragma comment(lib,"newton.lib")
-//#pragma comment(lib,"OgreNewt_Main_d.lib")
 
 using namespace Ogre;
 using namespace OgreOpcode;

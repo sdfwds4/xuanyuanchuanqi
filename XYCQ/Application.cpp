@@ -344,9 +344,10 @@ void Application::setupCEGUI()
 	//CEGUI::MouseCursor::getSingletonPtr()->setImage("TaharezLook","MouseArrow");
 	//CEGUI::MouseCursor::getSingletonPtr()->show();
 }
+
+//	FMOD soundmanager
 void Application::setupSoundManager()
 {
-	//	声音管理器
 	mSoundMgr = SoundManager::createInstance(mCamera);
 	mBackSound = mSoundMgr->createSound("BackGround.mp3",true,false,0,FMOD_CREATESTREAM);
 	mSoundMgr->playSound(mBackSound);
@@ -365,20 +366,20 @@ void Application::createScene()
 	mScene->setPGBush(Vector2(2000,100),Vector2(2500,100));
 
 	mScene->initPGGrass(100,false);
-	mScene->setPGGrass(500);
+	mScene->setPGGrass(1500);
 
-	mScene->setPGHeightFunction((PM_TREE), &HeightFunction::getTerrainHeight);
+	mScene->setPGHeightFunction(PAGE_MODE(PM_TREE|PM_BUSH|PM_GRASS), &HeightFunction::getTerrainHeight);
 
-	mScene->addPGGrass(String("grass"),Vector2(50.0,60.0),Vector2(70.0,80.0),0.002,false);
+	mScene->addPGGrass(String("grass"),Vector2(20.0,30.0),Vector2(40.0,50.0),0.001,false);
 	mScene->Load("LuoHuaVillage.scene",mWindow,OgreMaxScene::NO_OPTIONS,mSceneMgr);
 	
 	Real xcam_pos = 4000;
 	Real zcam_pos = 4000;
-	Real height = mListener->getTerrainHeight(xcam_pos,zcam_pos) + GlobalVariables::TheOneScale*GlobalVariables::TheOneHeight/2.0;
+	Real height = HeightFunction::getTerrainHeight(xcam_pos,zcam_pos) + GlobalVariables::TheOneScale*GlobalVariables::TheOneHeight/2.0;
 	mSceneMgr->getSceneNode("PlayerNode")->setPosition(xcam_pos,height,zcam_pos);
 
 }
-//	建立OgreOpcode实体
+//	create OgreOpcode objects
 void Application::createCollision()
 {
 	CollisionManager *cmgr = CollisionManager::getSingletonPtr();

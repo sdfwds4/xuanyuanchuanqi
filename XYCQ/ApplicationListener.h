@@ -87,23 +87,23 @@ public:
 		OgreMax::OgreMaxScene *scn = 0,OgreOpcode::CollisionObject *obj = 0);
 	~ApplicationListener();
 
-	//	帧监听
+	//	frame update
 	bool frameStarted(const FrameEvent &evt);
 	bool frameEnded(const FrameEvent &evt);
 
-	//	键盘监听
+	//	keyboard event
 	bool keyPressed(const OIS::KeyEvent &arg);
 	bool keyReleased(const OIS::KeyEvent &arg);
 	bool moveKeyHandler(const OIS::KeyEvent &arg,bool isPressed = true);
 	bool systemKeyHandler(const OIS::KeyEvent &arg,bool isPressed = true);
 	bool numKeyHandler(const OIS::KeyEvent &arg,bool isPressed = true);
 
-	//	鼠标监听
+	//	mouse event
 	bool mousePressed(const OIS::MouseEvent &arg,OIS::MouseButtonID id);
 	bool mouseReleased(const OIS::MouseEvent &arg,OIS::MouseButtonID id);
 	bool mouseMoved(const OIS::MouseEvent &arg);
 
-	//	更新
+	//	update
 	void updatePlayerStatus(const FrameEvent &evt);
 	void updateMouseDownEffect(const FrameEvent &evt);
 	void updateJump(const FrameEvent &evt);
@@ -117,7 +117,6 @@ private:
 	void onLButtonUp(const OIS::MouseEvent &arg);
 	void onRButtonUp(const OIS::MouseEvent &arg);
 
-	//	管理器
 	SceneManager *mSceneMgr;
 	RenderWindow *mWindow;
 	SoundManager *mSoundMgr;
@@ -127,7 +126,7 @@ private:
 
 	Overlay *mDebugOverlay;
 
-	//	重要节点
+	//	some important nodes
 	SceneNode *mPlayerNode;
 	SceneNode *mCameraNode;
 	SceneNode *mTheOneNode;
@@ -136,10 +135,10 @@ private:
 	OgreOpcode::CollisionContext *mCollContext;
 	OgreOpcode::CollisionObject *mTheOneObject;
 
-	//	控制变量
+	//	control variables
 	bool mContinue;
 	tKeyStatus mKeyStatus;
 
-	//	射线检测
+	//	the ray query
 	RaySceneQuery *mRaySceneQuery;
 };
