@@ -151,7 +151,7 @@ void ApplicationListener::updatePlayerStatus(const FrameEvent &evt)
 			mKeyStatus.update();
 			if(as != GlobalVariables::TheOneIdleAS)
 			{
-				//Vector3 dist = mKeyStatus.mTranslate;
+				Vector3 dist = mKeyStatus.mTranslate;
 				//Vector3 pos = mPlayerNode->getPosition();
 				//Vector3 vel = mPlayerNode->getOrientation()*dist;
 
