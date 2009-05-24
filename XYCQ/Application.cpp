@@ -367,7 +367,7 @@ void Application::createScene()
 	SceneNode *node = 0;
 
 	node = mSceneMgr->getRootSceneNode()->createChildSceneNode("max scene");
-	mScene->Load("LuoHuaVillage.scene",mWindow,OgreMaxScene::NO_OPTIONS,mSceneMgr,node);
+	mScene->Load("textscene.scene",mWindow,OgreMaxScene::NO_OPTIONS,mSceneMgr,node);
 	//node = mSceneMgr->getSceneNode("Terrain");
 	//node->setPosition(Vector3::ZERO);
 	
