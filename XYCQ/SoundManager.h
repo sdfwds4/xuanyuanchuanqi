@@ -1,5 +1,5 @@
 #pragma once
-#include "GlobalUnique.h"
+#include "GlobalDefines.h"
 #include <vector>
 #include <algorithm>
 

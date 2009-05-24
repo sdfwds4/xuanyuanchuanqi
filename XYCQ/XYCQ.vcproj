@@ -178,6 +178,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GlobalDefines.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\GObject.cpp"
 				>
 			</File>
@@ -189,6 +193,54 @@
 				RelativePath=".\XYCQmain.cpp"
 				>
 			</File>
+			<Filter
+				Name="OgreMax"
+				>
+				<File
+					RelativePath=".\OgreMax\OgreMaxModel.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\OgreMaxScene.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\OgreMaxUtilities.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\PGManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\ProgressCalculator.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\Utilities.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\Version.cpp"
+					>
+				</File>
+				<Filter
+					Name="tinyxml"
+					>
+					<File
+						RelativePath=".\OgreMax\tinyxml\tinyxml.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\OgreMax\tinyxml\tinyxmlerror.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\OgreMax\tinyxml\tinyxmlparser.cpp"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="头文件"
@@ -208,7 +260,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\GlobalUnique.h"
+				RelativePath=".\GlobalDefines.h"
 				>
 			</File>
 			<File
@@ -223,6 +275,62 @@
 				RelativePath=".\SoundManager.h"
 				>
 			</File>
+			<Filter
+				Name="OgreMax"
+				>
+				<File
+					RelativePath=".\OgreMax\OgreMax.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\OgreMaxModel.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\OgreMaxPlatform.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\OgreMaxRenderWindowIterator.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\OgreMaxScene.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\OgreMaxTypes.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\OgreMaxUtilities.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\PGManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\ProgressCalculator.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\Utilities.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OgreMax\Version.hpp"
+					>
+				</File>
+				<Filter
+					Name="tinyxml"
+					>
+					<File
+						RelativePath=".\OgreMax\tinyxml\tinyxml.h"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="资源文件"
