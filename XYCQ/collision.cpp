@@ -59,10 +59,10 @@ void doOgreOpcodeCollision(CollisionPacket& colData, float sweepOffset,
 	}
 }
 
-const float unitsPerMeter = 100.0f;
+const float unitsPerMeter = GV::UnitsPerMeter;
 
-const float unitScale = unitsPerMeter / 100.0f;
-const float veryCloseDistance = 5.0 * unitScale; 
+const float unitScale = unitsPerMeter / 10.0f;
+const float veryCloseDistance = 0.5 * unitScale; 
 
 Vector3 collideWithWorld(int recursionDepth, const Vector3& pos, 
 						 const Vector3& vel, CollisionPacket& colData, 

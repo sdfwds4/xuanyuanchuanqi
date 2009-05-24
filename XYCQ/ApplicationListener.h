@@ -1,10 +1,10 @@
-#pragma once
+#ifndef _APPLICATION_LISTENER_H
+#define _APPLICATION_LISTENER_H
+
 #include "GlobalDefines.h"
 #include "SoundManager.h"
 #include "GObject.h"
 #include "collision.h"
-
-using namespace Ogre;
 
 //	¼üÅÌ¿ØÖÆÃ¶¾Ù
 enum WALK_KEYS
@@ -142,3 +142,5 @@ private:
 	//	the ray query
 	RaySceneQuery *mRaySceneQuery;
 };
+
+#endif

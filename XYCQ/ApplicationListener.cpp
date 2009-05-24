@@ -151,11 +151,11 @@ void ApplicationListener::updatePlayerStatus(const FrameEvent &evt)
 			mKeyStatus.update();
 			if(as != GlobalVariables::TheOneIdleAS)
 			{
-				Vector3 dist = mKeyStatus.mTranslate * evt.timeSinceLastFrame;
+				//Vector3 dist = mKeyStatus.mTranslate;
 				//Vector3 pos = mPlayerNode->getPosition();
 				//Vector3 vel = mPlayerNode->getOrientation()*dist;
 
-				//Vector3 des = Collision::collideAndSlide(pos,vel,1,Vector3::ZERO,this);
+				//Vector3 des = Collision::collideAndSlide(pos,vel,10,Vector3::ZERO,this);
 				//mPlayerNode->setPosition(des);
 				mPlayerNode->translate(dist,Node::TS_LOCAL);
 			}

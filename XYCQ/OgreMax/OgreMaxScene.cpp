@@ -2337,15 +2337,15 @@ void OgreMaxScene::LoadEntity(const TiXmlElement* objectElement, const MovableOb
 	//	XXXXX PG engine modified code
 
 	/*	should be modified here...*/
-	String name_mask = entity->getName().substr(3,5);
+	String name_mask = entity->getName().substr(2,3);
 	Vector3 ent_pos = owner.node->_getDerivedPosition();
 	
-	if(name_mask.c_str() == "TR_")
+	if(name_mask == "TR_")
 	{
 		//	rendered as tree
 		addPGTree(entity, ent_pos,Ogre::Degree(0),owner.node->_getDerivedScale().y);		
 	}
-	else if(name_mask.c_str() == "BS_")
+	else if(name_mask == "BS_")
 	{
 		//	rendered as bush
 		addPGBush(entity, ent_pos,Ogre::Degree(0),owner.node->_getDerivedScale().y);
