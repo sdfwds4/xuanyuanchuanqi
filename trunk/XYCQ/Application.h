@@ -1,5 +1,5 @@
 #pragma once
-#include "GlobalUnique.h"
+#include "GlobalDefines.h"
 #include "ApplicationListener.h"
 #include "SoundManager.h"
 #include "GObject.h"
@@ -38,7 +38,7 @@ private:
 	void windowClosed(RenderWindow *rw);
 
 	//	get the height of terrain, used by the PG engine
-	inline float getTerrainHeight(float x, float z, void *extra)
+	Real __cdecl getTerrainHeight(Real x, Real z, void *extra)
 	{
 		return mListener->getTerrainHeight(x,z);
 	}

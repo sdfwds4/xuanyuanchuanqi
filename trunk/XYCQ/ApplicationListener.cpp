@@ -132,7 +132,7 @@ void ApplicationListener::updatePlayerStatus(const FrameEvent &evt)
 	//	地形射线查询，决定视角高度
 	Vector3 pos = mPlayerNode->getPosition();
 	Real height = getTerrainHeight(pos.x,pos.z);
-	pos.y = height + GlobalVariables::TheOneScale*GlobalVariables::TheOneHeight/2.0;
+	pos.y = height + GlobalVariables::TheOneHeight/2.0;
 
 	mPlayerNode->setPosition(pos);
 
@@ -152,12 +152,12 @@ void ApplicationListener::updatePlayerStatus(const FrameEvent &evt)
 			if(as != GlobalVariables::TheOneIdleAS)
 			{
 				Vector3 dist = mKeyStatus.mTranslate * evt.timeSinceLastFrame;
-				Vector3 pos = mPlayerNode->getPosition();
-				Vector3 vel = mPlayerNode->getOrientation()*dist;
+				//Vector3 pos = mPlayerNode->getPosition();
+				//Vector3 vel = mPlayerNode->getOrientation()*dist;
 
-				Vector3 des = Collision::collideAndSlide(pos,vel,1,Vector3::ZERO,this);
-				mPlayerNode->setPosition(des);
-				//mPlayerNode->translate(des,Node::TS_LOCAL);
+				//Vector3 des = Collision::collideAndSlide(pos,vel,1,Vector3::ZERO,this);
+				//mPlayerNode->setPosition(des);
+				mPlayerNode->translate(dist,Node::TS_LOCAL);
 			}
 		}
 	}
@@ -353,7 +353,7 @@ bool ApplicationListener::systemKeyHandler(const OIS::KeyEvent &arg,bool isPress
 		case OIS::KC_SPACE:
 			if(as != AS_JUMP && as != AS_JUMP_UP && as!= AS_JUMP_DOWN && as != AS_JUMP_LAND)
 			{
-				GlobalVariables::initJump(GlobalVariables::TheOneHeight,false);
+				GlobalVariables::InitJump(GlobalVariables::TheOneHeight,false);
 				GlobalVariables::TheOneJumping = true;
 			}
 			break;
@@ -614,7 +614,13 @@ bool ApplicationListener::mouseMoved(const OIS::MouseEvent &arg)
 				(GlobalVariables::CameraPitchCurrent < GlobalVariables::CameraPitchMax && stepY > 0))
 			{
 				mCameraNode->pitch( Degree(stepY), Node::TS_LOCAL);
-				GlobalVariables::CameraPitchCurrent += stepY;
+				GV::CameraPitchCurrent += stepY;
+
+				/*	set the visible of the one if the camera is too low */
+				if(GV::CameraPitchCurrent >= 120.0)
+					mTheOneNode->setVisible(false);
+				else
+					mTheOneNode->setVisible(true);
 			}
 
 			GObject::G_TheOne->mSceneNode->yaw( -Degree(stepX), Node::TS_WORLD);

@@ -1,39 +1,6 @@
 #include "Application.h"
 #include "HeightFunction.h"
 
-//	全局变量设置：
-const float GlobalVariables::CameraZoomStep					= 50.0;
-const float GlobalVariables::CameraZoomBegin				= 300.0;
-const float GlobalVariables::CameraZoomMin					= 200.0;
-const float GlobalVariables::CameraZoomMax					= 400.0;
-
-float GlobalVariables::CameraPitchMin						= 45.0;
-float GlobalVariables::CameraPitchMax						= 90.0;
-float GlobalVariables::CameraPitchCurrent					= 60.0;
-
-bool GlobalVariables::PlayerCameraLocked					= false;
-bool GlobalVariables::PlayerPositionLocked					= false;
-
-float GlobalVariables::TheOneScale							= 1.0;
-float GlobalVariables::TheOneHeight							= 150;
-AnimationStatus GlobalVariables::TheOneMoveAS				= AS_WALK;
-AnimationStatus GlobalVariables::TheOneIdleAS				= AS_IDLE;
-AnimationStatus GlobalVariables::TheOneAttackAS				= AS_ATTACK;
-
-bool GlobalVariables::TheOneJumping							= false;
-float GlobalVariables::TheOneJump_UT						= 0.1667;
-float GlobalVariables::TheOneJump_DT						= 0.5;
-float GlobalVariables::TheOneJump_LT						= 0.3333;
-
-float GlobalVariables::TheOneJump_H							= 0.0;
-float GlobalVariables::TheOneJump_h							= 0.0;
-float GlobalVariables::TheOneJump_V							= 0.0;
-float GlobalVariables::TheOneJump_T							= 0.0;
-float GlobalVariables::TheOneJump_t							= 0.0;
-
-const float GlobalVariables::Gravity						= 980;
-float GlobalVariables::BackSoundVolume						= 0.2;
-
 Application::Application(void):
 mKeyboard(0),mMouse(0),mInputManager(0),mListener(0),
 mSoundMgr(0),mRoot(0),mWindow(0),mSceneMgr(0),mCamera(0),
@@ -218,11 +185,11 @@ void Application::createSceneManager()
 	
 	SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode("PlayerNode",Vector3(20,0,20));
 
-	//	摄像机
+	/*	setup the camera */
 	mCamera = mSceneMgr->createCamera("PlayerCamera");
 	mCamera->setPosition(Vector3(0.0,GlobalVariables::CameraZoomBegin,GlobalVariables::CameraZoomBegin));
 	mCamera->lookAt(Vector3(0.0,0.0,0.0));
-	mCamera->setNearClipDistance(20.0);
+	mCamera->setNearClipDistance(GV::Meter(0.5));
 	//mCamera->setFarClipDistance(2000.0);
 	mCamera->setAutoAspectRatio(true);
 	Viewport *vp = mRoot->getAutoCreatedWindow()->addViewport(mCamera);
@@ -250,6 +217,7 @@ void Application::createTheOne()
 	SceneNode *node = mSceneMgr->getSceneNode("PlayerNode")->createChildSceneNode("TheOneNode");
 	Entity *ent = mSceneMgr->createEntity("TheOne","DonghuaMain.mesh");
 	node->attachObject(ent);
+	node->scale(Vector3::UNIT_SCALE*GV::UnitsPerMeter/100.0);
 
 	OgreOpcode::EntityCollisionShape *cshp = CollisionManager::getSingletonPtr()->createEntityCollisionShape(ent->getName());
 	cshp->load(ent);
@@ -261,7 +229,7 @@ void Application::createTheOne()
 	mCollContext->reset();
 
 	tObjectProperties *prop = new tObjectProperties(80,100,120,15,0);
-	prop->mMovingSpeed = 200;
+	prop->mMovingSpeed = GV::Meter(1.0);
 
 	GObject::G_TheOne->mSceneNode = node;
 	GObject::G_TheOne->mEntity = ent;
@@ -296,7 +264,7 @@ void Application::createTheOne()
 	ent->setCastShadows(false);
 	node = mSceneMgr->getRootSceneNode()->createChildSceneNode("mouseDownEffectNode");
 	node->attachObject(ent);
-	node->scale(0.1*GlobalVariables::TheOneScale,0.1*GlobalVariables::TheOneScale,0.1*GlobalVariables::TheOneScale);
+	node->scale(0.1,0.1,0.1);
 	node->setVisible(false);
 	animst = ent->getAnimationState("mouseDownEffect");
 	animst->setEnabled(true);
@@ -357,25 +325,52 @@ void Application::setupSoundManager()
 //	create ogremax scene
 void Application::createScene()
 {
-	mScene->initPG(mCamera,200000);
+	//mSceneMgr->setWorldGeometry("terrain.cfg");
+	//mSceneMgr->setSkyDome(true,"Examples/CloudySky",8,3);
 
-	mScene->initPGTrees(200,false);
-	mScene->setPGTree(Vector2(4000,100),Vector2(4500,100));
+	/* the max scene */
+	mScene->initPG(mCamera,1500);
 
-	mScene->initPGBushes(200,false);
-	mScene->setPGBush(Vector2(2000,100),Vector2(2500,100));
+	/*	setup tree rendering PG */
+	mScene->initPGTrees(GV::Meter(10.0),false);
+	mScene->setPGTree(Vector2(GV::Meter(50.0),GV::Meter(5.0)),
+		Vector2(GV::Meter(55.0),GV::Meter(1.0)));
 
-	mScene->initPGGrass(100,false);
-	mScene->setPGGrass(1500);
+	/*	setup bush rendering PG */
+	mScene->initPGBushes(GV::Meter(10.0),false);
+	mScene->setPGBush(Vector2(GV::Meter(20.0),GV::Meter(5.0)),
+		Vector2(GV::Meter(25.0),GV::Meter(1.0)));
 
-	mScene->setPGHeightFunction(PAGE_MODE(PM_TREE|PM_BUSH|PM_GRASS), &HeightFunction::getTerrainHeight);
+	///*	setup grass in PG */
+	//mScene->initPGGrass(GV::Meter(3.0),false);
+	//mScene->setPGGrass(GV::Meter(20.0));
 
-	mScene->addPGGrass(String("grass"),Vector2(20.0,30.0),Vector2(40.0,50.0),0.001,false);
-	mScene->Load("LuoHuaVillage.scene",mWindow,OgreMaxScene::NO_OPTIONS,mSceneMgr);
+	/*	set height function for trees bushes and grass */
+	mScene->setPGHeightFunction(PAGE_MODE(PM_TREE|PM_BUSH), &HeightFunction::getTerrainHeight);
+
+	///*	add some grass here */
+	//mScene->addPGGrass(String("grass"),
+	//	Vector2(GV::Meter(0.2),GV::Meter(0.3)),
+	//	Vector2(GV::Meter(0.4),GV::Meter(0.5)),
+	//	0.1,false);
+
+	//Entity *tree = mSceneMgr->createEntity("tree","fir05_30.mesh");
+	//Entity *bush = mSceneMgr->createEntity("bush","shroom1_3.mesh");
+
+	//for(int i=0;i<15;i++)
+	//	//for(int j=0;i<15;j++)
+	//	{
+	//		mScene->addPGTree(tree,Vector3(i*GV::Meter(10.0),0,i*GV::Meter(10.0)));
+	//		mScene->addPGBush(bush,Vector3(i*GV::Meter(10.0),0,i*GV::Meter(10.0)));
+	//	}
+
+	SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode("max scene");
+	mScene->Load("LuoHuaVillage.scene",mWindow,OgreMaxScene::NO_OPTIONS,mSceneMgr,node);
+	mScene->GetRootNode()->setScale(Vector3::UNIT_SCALE*GV::UnitsPerMeter/mScene->GetUnitsPerMeter());
 	
-	Real xcam_pos = 4000;
-	Real zcam_pos = 4000;
-	Real height = HeightFunction::getTerrainHeight(xcam_pos,zcam_pos) + GlobalVariables::TheOneScale*GlobalVariables::TheOneHeight/2.0;
+	Real xcam_pos = GV::Meter(0.0);
+	Real zcam_pos = GV::Meter(0.0);
+	Real height = HeightFunction::getTerrainHeight(xcam_pos,zcam_pos) + GlobalVariables::TheOneHeight/2.0;
 	mSceneMgr->getSceneNode("PlayerNode")->setPosition(xcam_pos,height,zcam_pos);
 
 }

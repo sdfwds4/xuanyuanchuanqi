@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "GlobalUnique.h"
+#include "GlobalDefines.h"
 #include "SoundManager.h"
 
 using namespace Ogre;
