@@ -2,7 +2,7 @@
 #include "GlobalDefines.h"
 
 /*	environment settings */
-float GV::UnitsPerMeter = 10.0;
+float GV::UnitsPerMeter = 100.0;
 float GV::Gravity = GV::Meter(9.8);
 float GV::BackSoundVolume = 0.2;
 
