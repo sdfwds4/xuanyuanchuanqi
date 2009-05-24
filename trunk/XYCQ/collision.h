@@ -2,6 +2,7 @@
 #define __COLLISION_H__
 
 #include "OgreVector3.h"
+#include "GlobalDefines.h"
 
 namespace Collision {
 

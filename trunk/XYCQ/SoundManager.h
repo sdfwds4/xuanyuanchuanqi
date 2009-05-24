@@ -3,9 +3,6 @@
 #include <vector>
 #include <algorithm>
 
-using namespace FMOD;
-
-
 // 把OGRE里的3D矢量转到FMOD中
 static FMOD_VECTOR *GetFV3(Ogre::Vector3 v3)
 {
@@ -48,31 +45,23 @@ struct tNodeSound
 {
 	tNodeSound(Ogre::SceneNode *node = 0,bool is3d = true)
 	{
-		mNode						= node;
-		mSound						= 0;
-		mChannel					= 0;
-		mIs3D						= is3d;
+		mNode = node;
+		mSound = 0;
+		mChannel = 0;
+		mIs3D = is3d;
 		
 		if(node)
-		{
 			mPosition = GetFV3(mNode->_getDerivedPosition());
-		}
 		else
-		{
 			mPosition = GetFV3(Ogre::Vector3::ZERO);
-		}
 		mVelocity = GetFV3(Ogre::Vector3::ZERO);
 	}
 	~tNodeSound()
 	{
 		if(mPosition)
-		{
 			delete mPosition;
-		}
 		if(mVelocity)
-		{
 			delete mVelocity;
-		}
 	}
 	void update()
 	{
@@ -84,12 +73,12 @@ struct tNodeSound
 			mChannel->set3DAttributes(mPosition,mVelocity);
 		}
 	}
-	Ogre::SceneNode					*mNode;
-	FMOD_VECTOR						*mPosition;
-	FMOD_VECTOR						*mVelocity;
-	Sound							*mSound;
-	Channel							*mChannel;
-	bool							mIs3D;
+	Ogre::SceneNode *mNode;
+	FMOD_VECTOR *mPosition;
+	FMOD_VECTOR *mVelocity;
+	Sound *mSound;
+	Channel *mChannel;
+	bool mIs3D;
 };
 
 
@@ -98,12 +87,12 @@ struct t3DListener
 {
 	t3DListener(Ogre::Camera *cam)		//	cam不能为0！！
 	{
-		id					= 0;
-		mCamera				= cam;
-		mPosition			= GetFV3(cam->getRealPosition());
-		mVelocity			= GetFV3(Ogre::Vector3::ZERO);
-		mForward			= GetFV3(-cam->getRealDirection());
-		mUp					= GetFV3(cam->getRealUp());
+		id = 0;
+		mCamera = cam;
+		mPosition = GetFV3(cam->getRealPosition());
+		mVelocity = GetFV3(Ogre::Vector3::ZERO);
+		mForward = GetFV3(-cam->getRealDirection());
+		mUp = GetFV3(cam->getRealUp());
 	}
 	~t3DListener()
 	{
@@ -131,12 +120,12 @@ struct t3DListener
 		SetFV3(mForward,-mCamera->getRealDirection());
 		SetFV3(mUp,mCamera->getRealUp());
 	}
-	int								id;
-	Ogre::Camera					*mCamera;
-	FMOD_VECTOR						*mPosition;
-	FMOD_VECTOR						*mVelocity;
-	FMOD_VECTOR						*mForward;
-	FMOD_VECTOR						*mUp;
+	int id;
+	Ogre::Camera *mCamera;
+	FMOD_VECTOR *mPosition;
+	FMOD_VECTOR *mVelocity;
+	FMOD_VECTOR *mForward;
+	FMOD_VECTOR *mUp;
 };
 class SoundManager
 {
@@ -148,29 +137,29 @@ public:
 			exit(-1);
 		}
 	}
-	tNodeSound*						createSound(char *fileName,bool isLoop = false, bool is3D = true,
+	tNodeSound* createSound(char *fileName,bool isLoop = false, bool is3D = true,
 		Ogre::SceneNode *node = 0,							//	模型节点
 		FMOD_MODE createType = FMOD_CREATECOMPRESSEDSAMPLE,	//	文件加载方式
 		FMOD_MODE relative = FMOD_3D_WORLDRELATIVE,			//	3D坐标相关								
 		FMOD_MODE rolloff = FMOD_3D_LOGROLLOFF);			//	衰减方式
 
-	void							playSound(tNodeSound *nodeSound);
-	void							releaseSound(tNodeSound *nodeSound);
-	void							update();
+	void playSound(tNodeSound *nodeSound);
+	void releaseSound(tNodeSound *nodeSound);
+	void update();
 
 	//	外部创建与访问方法
-	static SoundManager*			createInstance(Ogre::Camera *cam = 0,int chn = 100);
-	static SoundManager*			getSingletonPtr();
-	static SoundManager				getSingleton();
+	static SoundManager* createInstance(Ogre::Camera *cam = 0,int chn = 100);
+	static SoundManager* getSingletonPtr();
+	static SoundManager getSingleton();
 private:
-	System							*mSystem;
-	t3DListener						*m3DListener;
-	FMOD_RESULT						mFmodResult;
-	int								mMaxChannels;
-	std::vector<tNodeSound *>		mSoundPool;
+	System *mSystem;
+	t3DListener *m3DListener;
+	FMOD_RESULT mFmodResult;
+	int mMaxChannels;
+	std::vector<tNodeSound *> mSoundPool;
 
 	//	单实例与其构建
-	static SoundManager				*ms_Instance;
+	static SoundManager *ms_Instance;
 	SoundManager(Ogre::Camera *cam = 0,int chn = 100);
 	~SoundManager(void);
 };

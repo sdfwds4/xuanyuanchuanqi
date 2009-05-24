@@ -9,6 +9,11 @@
 
 #include "OgreMax/OgreMax.h"
 
+using namespace OgreOpcode;
+using namespace OgreMax;
+using namespace FMOD;
+//using namespace Game;
+
 //	¶¯»­ÐòÁÐÃ¶¾Ù
 enum AnimationStatus
 {

@@ -122,7 +122,7 @@ void Application::go()
 	createFrameListener();
 
 	createScene();
-	createCollision();
+	//createCollision();
 	startRenderLoop();
 }
 
@@ -329,7 +329,7 @@ void Application::createScene()
 	//mSceneMgr->setSkyDome(true,"Examples/CloudySky",8,3);
 
 	/* the max scene */
-	mScene->initPG(mCamera,1500);
+	mScene->initPG(mCamera,GV::Meter(140.0));
 
 	/*	setup tree rendering PG */
 	mScene->initPGTrees(GV::Meter(10.0),false);
@@ -364,12 +364,15 @@ void Application::createScene()
 	//		mScene->addPGBush(bush,Vector3(i*GV::Meter(10.0),0,i*GV::Meter(10.0)));
 	//	}
 
-	SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode("max scene");
+	SceneNode *node = 0;
+
+	node = mSceneMgr->getRootSceneNode()->createChildSceneNode("max scene");
 	mScene->Load("LuoHuaVillage.scene",mWindow,OgreMaxScene::NO_OPTIONS,mSceneMgr,node);
-	mScene->GetRootNode()->setScale(Vector3::UNIT_SCALE*GV::UnitsPerMeter/mScene->GetUnitsPerMeter());
+	//node = mSceneMgr->getSceneNode("Terrain");
+	//node->setPosition(Vector3::ZERO);
 	
-	Real xcam_pos = GV::Meter(0.0);
-	Real zcam_pos = GV::Meter(0.0);
+	Real xcam_pos = GV::Meter(50.0);
+	Real zcam_pos = GV::Meter(50.0);
 	Real height = HeightFunction::getTerrainHeight(xcam_pos,zcam_pos) + GlobalVariables::TheOneHeight/2.0;
 	mSceneMgr->getSceneNode("PlayerNode")->setPosition(xcam_pos,height,zcam_pos);
 
@@ -385,16 +388,30 @@ void Application::createCollision()
 	while(itr.hasMoreElements())
 	{
 		Entity *ent = static_cast<Entity *>(itr.peekNextValue());
-		String str = ent->getName().substr(0,5);
-		if(str=="House")
+		//SceneNode *node = 0;
+		//node = ent->getParentSceneNode();
+		String str = ent->getName().substr(0,2);
+		if(str == "EX")
 		{
-			//ent->getParentSceneNode()->showBoundingBox(true);
+			/*	setup exact collision object */
 			cshp = cmgr->createEntityCollisionShape(ent->getName());
 			cshp->load(ent);
 			cobj = mCollContext->createObject(ent->getName());
 			cobj->setCollClass("player");
 			cobj->setShape(cshp);
 			mCollContext->addObject(cobj);
+			ent->setVisible(false);
+		}
+		else if(str == "QK")
+		{
+			/*	setup quick collision object */
+			cshp = cmgr->createEntityCollisionShape(ent->getName());
+			cshp->load(ent);
+			cobj = mCollContext->createObject(ent->getName());
+			cobj->setCollClass("player");
+			cobj->setShape(cshp);
+			mCollContext->addObject(cobj);
+			ent->setVisible(false);
 		}
 		itr.moveNext();
 	}

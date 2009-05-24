@@ -1,11 +1,10 @@
-#pragma once
+#ifndef _APPLICATION_H
+#define _APPLICATION_H
+
 #include "GlobalDefines.h"
 #include "ApplicationListener.h"
 #include "SoundManager.h"
 #include "GObject.h"
-
-using namespace OgreOpcode;
-using namespace OgreMax;
 
 class Application : public WindowEventListener
 {
@@ -64,3 +63,5 @@ private:
 	CEGUI::Window *mCEGUISheet;
 	Camera *mCamera;
 };
+
+#endif
