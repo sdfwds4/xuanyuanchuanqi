@@ -221,6 +221,7 @@ void Application::createTheOne()
 
 	OgreOpcode::EntityCollisionShape *cshp = CollisionManager::getSingletonPtr()->createEntityCollisionShape(ent->getName());
 	cshp->load(ent);
+	ent->setCastShadows(false);
 
 	mTheOneObject = mCollContext->createObject(ent->getName());
 	mTheOneObject->setCollClass("player");
@@ -326,20 +327,18 @@ void Application::setupSoundManager()
 void Application::createScene()
 {
 	//mSceneMgr->setWorldGeometry("terrain.cfg");
-	//mSceneMgr->setSkyDome(true,"Examples/CloudySky",8,3);
+	mSceneMgr->setSkyDome(true,"Examples/CloudySky",8,3);
 
 	/* the max scene */
 	mScene->initPG(mCamera,GV::Meter(140.0));
 
 	/*	setup tree rendering PG */
-	mScene->initPGTrees(GV::Meter(10.0),false);
-	mScene->setPGTree(Vector2(GV::Meter(50.0),GV::Meter(5.0)),
-		Vector2(GV::Meter(55.0),GV::Meter(1.0)));
+	mScene->initPGTrees(GV::Meter(15.0),false);
+	mScene->setPGTree(Vector2(GV::Meter(30.0),GV::Meter(50.0)));
 
 	/*	setup bush rendering PG */
 	mScene->initPGBushes(GV::Meter(10.0),false);
-	mScene->setPGBush(Vector2(GV::Meter(20.0),GV::Meter(5.0)),
-		Vector2(GV::Meter(25.0),GV::Meter(1.0)));
+	mScene->setPGBush(Vector2(GV::Meter(20.0),GV::Meter(30.0)));
 
 	///*	setup grass in PG */
 	//mScene->initPGGrass(GV::Meter(3.0),false);
@@ -354,22 +353,9 @@ void Application::createScene()
 	//	Vector2(GV::Meter(0.4),GV::Meter(0.5)),
 	//	0.1,false);
 
-	//Entity *tree = mSceneMgr->createEntity("tree","fir05_30.mesh");
-	//Entity *bush = mSceneMgr->createEntity("bush","shroom1_3.mesh");
-
-	//for(int i=0;i<15;i++)
-	//	//for(int j=0;i<15;j++)
-	//	{
-	//		mScene->addPGTree(tree,Vector3(i*GV::Meter(10.0),0,i*GV::Meter(10.0)));
-	//		mScene->addPGBush(bush,Vector3(i*GV::Meter(10.0),0,i*GV::Meter(10.0)));
-	//	}
-
 	SceneNode *node = 0;
-
 	node = mSceneMgr->getRootSceneNode()->createChildSceneNode("max scene");
 	mScene->Load("textscene.scene",mWindow,OgreMaxScene::NO_OPTIONS,mSceneMgr,node);
-	//node = mSceneMgr->getSceneNode("Terrain");
-	//node->setPosition(Vector3::ZERO);
 	
 	Real xcam_pos = GV::Meter(50.0);
 	Real zcam_pos = GV::Meter(50.0);
