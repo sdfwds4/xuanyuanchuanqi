@@ -1,5 +1,4 @@
 #include "Application.h"
-#include "HeightFunction.h"
 
 Application::Application(void):
 mKeyboard(0),mMouse(0),mInputManager(0),mListener(0),
@@ -181,20 +180,21 @@ void Application::initializeResourceGroups()
 void Application::createSceneManager()
 {
 	mSceneMgr = mRoot->createSceneManager(ST_EXTERIOR_CLOSE,"defaultSceneManager");
-	HeightFunction::initialize(mSceneMgr);
+	//	初始化“射线场景查询”指针
+	raySceneQuery = mSceneMgr->createRayQuery(Ray());
 	
 	SceneNode *node = mSceneMgr->getRootSceneNode()->createChildSceneNode("PlayerNode",Vector3(20,0,20));
 
 	/*	setup the camera */
 	mCamera = mSceneMgr->createCamera("PlayerCamera");
-	mCamera->setPosition(Vector3(0.0,GlobalVariables::CameraZoomBegin,GlobalVariables::CameraZoomBegin));
+	mCamera->setPosition(Vector3(0.0,GV::CameraZoomBegin,GV::CameraZoomBegin));
 	mCamera->lookAt(Vector3(0.0,0.0,0.0));
 	mCamera->setNearClipDistance(GV::Meter(0.5));
 	//mCamera->setFarClipDistance(2000.0);
 	mCamera->setAutoAspectRatio(true);
 	Viewport *vp = mRoot->getAutoCreatedWindow()->addViewport(mCamera);
 
-	SceneNode *camNode = node->createChildSceneNode("PlayerCameraNode",Vector3(0,GlobalVariables::TheOneHeight/2.0,0));
+	SceneNode *camNode = node->createChildSceneNode("PlayerCameraNode",Vector3(0,GV::TheOneHeight/2.0,0));
 	camNode->attachObject(mCamera);
 	mRoot->getAutoCreatedWindow()->addViewport(mCamera,10);
 
@@ -256,9 +256,9 @@ void Application::createTheOne()
 	AnimationState *animst = GObject::G_TheOne->mCurrentAnimation->mAnimState;
 	animst->setTimePosition(animst->getLength()*0.5);
 
-	GlobalVariables::TheOneJump_UT = GObject::G_TheOne->mAnimation.at(AS_JUMP_UP)->mAnimState->getLength();
-	GlobalVariables::TheOneJump_DT = GObject::G_TheOne->mAnimation.at(AS_JUMP_DOWN)->mAnimState->getLength();
-	GlobalVariables::TheOneJump_LT = GObject::G_TheOne->mAnimation.at(AS_JUMP_LAND)->mAnimState->getLength();
+	GV::TheOneJump_UT = GObject::G_TheOne->mAnimation.at(AS_JUMP_UP)->mAnimState->getLength();
+	GV::TheOneJump_DT = GObject::G_TheOne->mAnimation.at(AS_JUMP_DOWN)->mAnimState->getLength();
+	GV::TheOneJump_LT = GObject::G_TheOne->mAnimation.at(AS_JUMP_LAND)->mAnimState->getLength();
 
 	// 鼠标点击特效
 	ent = mSceneMgr->createEntity("mouseDownEffectEntity","mouseDownEffect.mesh");
@@ -320,7 +320,7 @@ void Application::setupSoundManager()
 	mSoundMgr = SoundManager::createInstance(mCamera);
 	mBackSound = mSoundMgr->createSound("BackGround.mp3",true,false,0,FMOD_CREATESTREAM);
 	mSoundMgr->playSound(mBackSound);
-	mBackSound->mChannel->setVolume(GlobalVariables::BackSoundVolume);
+	mBackSound->mChannel->setVolume(GV::BackSoundVolume);
 }
 
 //	create ogremax scene
@@ -345,7 +345,7 @@ void Application::createScene()
 	//mScene->setPGGrass(GV::Meter(20.0));
 
 	/*	set height function for trees bushes and grass */
-	mScene->setPGHeightFunction(PAGE_MODE(PM_TREE|PM_BUSH), &HeightFunction::getTerrainHeight);
+	mScene->setPGHeightFunction(PAGE_MODE(PM_TREE|PM_BUSH), &GV::getTerrainHeight);
 
 	///*	add some grass here */
 	//mScene->addPGGrass(String("grass"),
@@ -359,7 +359,7 @@ void Application::createScene()
 	
 	Real xcam_pos = GV::Meter(50.0);
 	Real zcam_pos = GV::Meter(50.0);
-	Real height = HeightFunction::getTerrainHeight(xcam_pos,zcam_pos) + GlobalVariables::TheOneHeight/2.0;
+	Real height = GV::getTerrainHeight(xcam_pos,zcam_pos) + GV::TheOneHeight/2.0;
 	mSceneMgr->getSceneNode("PlayerNode")->setPosition(xcam_pos,height,zcam_pos);
 
 }

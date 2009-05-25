@@ -268,10 +268,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\HeightFunction.h"
-				>
-			</File>
-			<File
 				RelativePath=".\SoundManager.h"
 				>
 			</File>

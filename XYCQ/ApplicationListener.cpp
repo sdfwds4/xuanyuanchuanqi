@@ -25,9 +25,6 @@ mContinue(true)
 
 	mKeyStatus.mDestPoint = mPlayerNode->getPosition();
 
-	//	初始化“射线场景查询”指针
-	mRaySceneQuery = mgr->createRayQuery(Ray());
-
 	if(mKeyboard)
 		mKeyboard->setEventCallback(this);
 	if(mMouse)
@@ -35,10 +32,6 @@ mContinue(true)
 }
 ApplicationListener::~ApplicationListener(void)
 {
-	if(mRaySceneQuery)
-	{
-		mSceneMgr->destroyQuery(mRaySceneQuery);
-	}
 }
 
 CEGUI::MouseButton ois2CeguiMB(const OIS::MouseButtonID id)
@@ -54,27 +47,7 @@ CEGUI::MouseButton ois2CeguiMB(const OIS::MouseButtonID id)
 	}
 	return CEGUI::LeftButton;
 }
-//	检测地形高度
-Real ApplicationListener::getTerrainHeight(Ogre::Real x, Ogre::Real z, void *extra)
-{
-	Ray ray(Vector3(x,5000.0f,z),Vector3::NEGATIVE_UNIT_Y);
-	mRaySceneQuery->setRay(ray);
-	RaySceneQueryResult &rs = mRaySceneQuery->execute();
-	RaySceneQueryResult::iterator itr = rs.begin();
-	
-	Real height = -1;
-	for(;itr<rs.end();itr++)
-	{
-		if(itr->worldFragment)
-		{
-			height = itr->worldFragment->singleIntersection.y;
-			break;
-		}
-	}
-	mRaySceneQuery->clearResults();
 
-	return height;
-}
 void ApplicationListener::onLButtonDown(const OIS::MouseEvent &arg)
 {
 	//	摄像机射线查询，由鼠标取得目的地
@@ -95,11 +68,11 @@ void ApplicationListener::onLButtonDown(const OIS::MouseEvent &arg)
 		//	if(itr->worldFragment)
 		//	{
 		//		AnimationStatus as = GObject::G_TheOne->mCurrentAnimation->mAnimStatus;
-		//		if((as == GlobalVariables::TheOneIdleAS || as == GlobalVariables::TheOneMoveAS) &&
-		//			!GlobalVariables::PlayerPositionLocked)
+		//		if((as == GV::TheOneIdleAS || as == GV::TheOneMoveAS) &&
+		//			!GV::PlayerPositionLocked)
 		//		{
-		//			if(!GlobalVariables::TheOneJumping)
-		//				GObject::G_TheOne->playAnimation(GlobalVariables::TheOneMoveAS,true);
+		//			if(!GV::TheOneJumping)
+		//				GObject::G_TheOne->playAnimation(GV::TheOneMoveAS,true);
 		//			mKeyStatus.mDestPoint = itr->worldFragment->singleIntersection;
 		//			mKeyStatus.mGoMouseDown = true;
 
@@ -131,8 +104,8 @@ void ApplicationListener::updatePlayerStatus(const FrameEvent &evt)
 {
 	//	地形射线查询，决定视角高度
 	Vector3 pos = mPlayerNode->getPosition();
-	Real height = getTerrainHeight(pos.x,pos.z);
-	pos.y = height + GlobalVariables::TheOneHeight/2.0;
+	Real height = GV::getTerrainHeight(pos.x,pos.z);
+	pos.y = height + GV::TheOneHeight/2.0;
 
 	mPlayerNode->setPosition(pos);
 
@@ -146,10 +119,10 @@ void ApplicationListener::updatePlayerStatus(const FrameEvent &evt)
 	//	键盘移动
 	if(mKeyStatus.mDownKeys > 0)
 	{
-		if(as != GlobalVariables::TheOneAttackAS && as != AS_SPELL && as != AS_JUMP_LAND)
+		if(as != GV::TheOneAttackAS && as != AS_SPELL && as != AS_JUMP_LAND)
 		{
 			mKeyStatus.update();
-			if(as != GlobalVariables::TheOneIdleAS)
+			if(as != GV::TheOneIdleAS)
 			{
 				Vector3 dist = mKeyStatus.mTranslate * evt.timeSinceLastFrame;
 				//Vector3 pos = mPlayerNode->getPosition();
@@ -193,35 +166,35 @@ void ApplicationListener::updatePlayerStatus(const FrameEvent &evt)
 	//	else
 	//	{
 	//		mKeyStatus.mGoMouseDown = false;
-	//		if(!GlobalVariables::TheOneJumping)
-	//			GObject::G_TheOne->playAnimation(GlobalVariables::TheOneIdleAS,false);
+	//		if(!GV::TheOneJumping)
+	//			GObject::G_TheOne->playAnimation(GV::TheOneIdleAS,false);
 	//	}
 	//}
 	//	当前动作结束，且无跳跃，进行随机发呆动作
-	if(GObject::G_TheOne->mCurrentAnimation->mAnimState->hasEnded() && !GlobalVariables::TheOneJumping)
+	if(GObject::G_TheOne->mCurrentAnimation->mAnimState->hasEnded() && !GV::TheOneJumping)
 	{
 		if(mKeyStatus.mDownKeys == 0)
 		{
 			if(as == AS_IDLE1 || as == AS_IDLE2)
 			{
-				GlobalVariables::TheOneIdleAS = AnimationStatus(AS_IDLE + rand()%3);
+				GV::TheOneIdleAS = AnimationStatus(AS_IDLE + rand()%3);
 			}
 			else if(rand()%3 == 0)
 			{
-				GlobalVariables::TheOneIdleAS = AnimationStatus(AS_IDLE + rand()%3);
+				GV::TheOneIdleAS = AnimationStatus(AS_IDLE + rand()%3);
 			}
-			if(!GlobalVariables::TheOneJumping)
-				GObject::G_TheOne->playAnimation(GlobalVariables::TheOneIdleAS,false);
+			if(!GV::TheOneJumping)
+				GObject::G_TheOne->playAnimation(GV::TheOneIdleAS,false);
 		}
 		else
 		{
-			GObject::G_TheOne->playAnimation(GlobalVariables::TheOneMoveAS,true);
+			GObject::G_TheOne->playAnimation(GV::TheOneMoveAS,true);
 		}
 	}
 
-	if(GlobalVariables::TheOneJumping)
+	if(GV::TheOneJumping)
 	{
-		mTheOneNode->setPosition(Vector3(0,GlobalVariables::TheOneJump_h,0));
+		mTheOneNode->setPosition(Vector3(0,GV::TheOneJump_h,0));
 	}
 	// 动画更新
 	GObject::G_TheOne->mCurrentAnimation->mAnimState->addTime(evt.timeSinceLastFrame);
@@ -239,30 +212,30 @@ void ApplicationListener::updateMouseDownEffect(const FrameEvent &evt)
 }
 void ApplicationListener::updateJump(const FrameEvent &evt)
 {
-	float t = GlobalVariables::TheOneJump_t;
+	float t = GV::TheOneJump_t;
 
-	if(t >= 0 && t < GlobalVariables::TheOneJump_UT)
+	if(t >= 0 && t < GV::TheOneJump_UT)
 	{
 		GObject::G_TheOne->playAnimation(AS_JUMP_UP);
 	}
-	else if(t >= GlobalVariables::TheOneJump_T/2.0 && t < GlobalVariables::TheOneJump_T/2.0 + GlobalVariables::TheOneJump_DT)
+	else if(t >= GV::TheOneJump_T/2.0 && t < GV::TheOneJump_T/2.0 + GV::TheOneJump_DT)
 	{
 		GObject::G_TheOne->playAnimation(AS_JUMP_DOWN);
 	}
-	else if(t >= GlobalVariables::TheOneJump_T - GlobalVariables::TheOneJump_LT && t < GlobalVariables::TheOneJump_T)
+	else if(t >= GV::TheOneJump_T - GV::TheOneJump_LT && t < GV::TheOneJump_T)
 	{
 		GObject::G_TheOne->playAnimation(AS_JUMP_LAND);
 	}
-	else if(t > GlobalVariables::TheOneJump_T)
+	else if(t > GV::TheOneJump_T)
 	{
-		GlobalVariables::TheOneJumping = false;
+		GV::TheOneJumping = false;
 		mTheOneNode->setPosition(0,0,0);
 		mKeyStatus.mGoMouseDown = false;
 		return ;
 	}
-	GlobalVariables::TheOneJump_t += evt.timeSinceLastFrame;
-	GlobalVariables::TheOneJump_h = GlobalVariables::TheOneJump_V*GlobalVariables::TheOneJump_t - 
-		GlobalVariables::Gravity * GlobalVariables::TheOneJump_t * GlobalVariables::TheOneJump_t / 2.0;	
+	GV::TheOneJump_t += evt.timeSinceLastFrame;
+	GV::TheOneJump_h = GV::TheOneJump_V*GV::TheOneJump_t - 
+		GV::Gravity * GV::TheOneJump_t * GV::TheOneJump_t / 2.0;	
 }
 
 bool ApplicationListener::frameStarted(const FrameEvent &evt)
@@ -277,7 +250,7 @@ bool ApplicationListener::frameStarted(const FrameEvent &evt)
 	updateMouseDownEffect(evt);
 	
 	//	跳跃重力作用更新
-	if(GlobalVariables::TheOneJumping)
+	if(GV::TheOneJumping)
 	{
 		updateJump(evt);
 	}
@@ -308,16 +281,16 @@ bool ApplicationListener::numKeyHandler(const OIS::KeyEvent &arg, bool isPressed
 			mKeyStatus.mGoMouseDown = false;
 			if(as != AS_ATTACK && as != AS_ATTACK1 && as != AS_ATTACK2)
 			{
-				GlobalVariables::TheOneAttackAS = AnimationStatus(AS_ATTACK + rand()%3);
-				if(!GlobalVariables::TheOneJumping)
-					GObject::G_TheOne->playAnimation(GlobalVariables::TheOneAttackAS);
+				GV::TheOneAttackAS = AnimationStatus(AS_ATTACK + rand()%3);
+				if(!GV::TheOneJumping)
+					GObject::G_TheOne->playAnimation(GV::TheOneAttackAS);
 			}
 			break;
 		case OIS::KC_2:
 			mKeyStatus.mGoMouseDown = false;
 			if(GObject::G_TheOne->mCurrentAnimation->mAnimStatus != AS_SPELL)
 			{
-				if(!GlobalVariables::TheOneJumping)
+				if(!GV::TheOneJumping)
 					GObject::G_TheOne->playAnimation(AS_SPELL);
 			}
 			break;
@@ -336,12 +309,12 @@ bool ApplicationListener::systemKeyHandler(const OIS::KeyEvent &arg,bool isPress
 		AnimationStatus as = GObject::G_TheOne->mCurrentAnimation->mAnimStatus;
 		switch(arg.key)
 		{
-		case OIS::KC_Q:
-			if(!GlobalVariables::PlayerCameraLocked)
+		case OIS::KC_A:
+			if(!GV::PlayerCameraLocked)
 				mKeyStatus.mRotate -= mKeyStatus.mRotateStep;
 			break;
-		case OIS::KC_E:
-			if(!GlobalVariables::PlayerCameraLocked)
+		case OIS::KC_D:
+			if(!GV::PlayerCameraLocked)
 				mKeyStatus.mRotate += mKeyStatus.mRotateStep;
 			break;
 		case OIS::KC_F:
@@ -353,34 +326,38 @@ bool ApplicationListener::systemKeyHandler(const OIS::KeyEvent &arg,bool isPress
 		case OIS::KC_SPACE:
 			if(as != AS_JUMP && as != AS_JUMP_UP && as!= AS_JUMP_DOWN && as != AS_JUMP_LAND)
 			{
-				GlobalVariables::InitJump(GlobalVariables::TheOneHeight,false);
-				GlobalVariables::TheOneJumping = true;
+				GV::InitJump(GV::TheOneHeight,false);
+				GV::TheOneJumping = true;
 			}
 			break;
 		case OIS::KC_ESCAPE:
 			mContinue = false;
 			break;
 		case OIS::KC_F1:
-			//	锁定相机
-			GlobalVariables::PlayerCameraLocked = !GlobalVariables::PlayerCameraLocked;
+			/*	lock the position of player */
+			GV::PlayerPositionLocked = !GV::PlayerPositionLocked;
+			if(!GV::TheOneJumping)
+				GObject::G_TheOne->playAnimation(GV::TheOneIdleAS,false);
 			break;
 		case OIS::KC_F2:
-			//	锁定位置
-			GlobalVariables::PlayerPositionLocked = !GlobalVariables::PlayerPositionLocked;
-			if(!GlobalVariables::TheOneJumping)
-				GObject::G_TheOne->playAnimation(GlobalVariables::TheOneIdleAS,false);
+			/*	lock the camera absolutely */
+			GV::PlayerCameraLocked = !GV::PlayerCameraLocked;
+			break;
+		case OIS::KC_F3:
+			/*	lock the camera pitching */
+			GV::PlayerCameraPicthLocked = !GV::PlayerCameraPicthLocked;
 			break;
 		case OIS::KC_R:
 			AnimationStatus as = GObject::G_TheOne->mCurrentAnimation->mAnimStatus;
 			//	移动状态不能同时切换移动模式
-			if(GlobalVariables::TheOneMoveAS == AS_WALK && as != AS_WALK && as != AS_RUN)
+			if(GV::TheOneMoveAS == AS_WALK && as != AS_WALK && as != AS_RUN)
 			{
-				GlobalVariables::TheOneMoveAS = AS_RUN;
+				GV::TheOneMoveAS = AS_RUN;
 				GObject::G_TheOne->mProperties->mMovingSpeed *= 2.0;
 			}
-			else if(GlobalVariables::TheOneMoveAS == AS_RUN && as != AS_WALK && as != AS_RUN)
+			else if(GV::TheOneMoveAS == AS_RUN && as != AS_WALK && as != AS_RUN)
 			{
-				GlobalVariables::TheOneMoveAS = AS_WALK;
+				GV::TheOneMoveAS = AS_WALK;
 				GObject::G_TheOne->mProperties->mMovingSpeed /= 2.0;
 			}
 			break;
@@ -390,12 +367,12 @@ bool ApplicationListener::systemKeyHandler(const OIS::KeyEvent &arg,bool isPress
 	{
 		switch(arg.key)
 		{
-		case OIS::KC_Q:
-			if(!GlobalVariables::PlayerCameraLocked)
+		case OIS::KC_A:
+			if(!GV::PlayerCameraLocked)
 				mKeyStatus.mRotate += mKeyStatus.mRotateStep;
 			break;
-		case OIS::KC_E:
-			if(!GlobalVariables::PlayerCameraLocked)
+		case OIS::KC_D:
+			if(!GV::PlayerCameraLocked)
 				mKeyStatus.mRotate -= mKeyStatus.mRotateStep;
 			break;
 		}
@@ -439,7 +416,7 @@ bool ApplicationListener::moveKeyHandler(const OIS::KeyEvent &arg, bool isPresse
 			mKeyStatus.mWalkKey -= WK_S;
 		}
 		break;
-	case OIS::KC_A:
+	case OIS::KC_Q:
 	case OIS::KC_LEFT:
 		if(isPressed)
 		{
@@ -454,7 +431,7 @@ bool ApplicationListener::moveKeyHandler(const OIS::KeyEvent &arg, bool isPresse
 			mKeyStatus.mWalkKey -= WK_A;
 		}
 		break;
-	case OIS::KC_D:
+	case OIS::KC_E:
 	case OIS::KC_RIGHT:
 		if(isPressed)
 		{
@@ -482,23 +459,23 @@ bool ApplicationListener::moveKeyHandler(const OIS::KeyEvent &arg, bool isPresse
 		mKeyStatus.mGoMouseDown = false;
 
 		//	有按键，且空闲时，才可转为移动态
-		if(as == GlobalVariables::TheOneIdleAS)
+		if(as == GV::TheOneIdleAS)
 		{
-			if(!GlobalVariables::TheOneJumping)
-				GObject::G_TheOne->playAnimation(GlobalVariables::TheOneMoveAS,true);
+			if(!GV::TheOneJumping)
+				GObject::G_TheOne->playAnimation(GV::TheOneMoveAS,true);
 		}
 	}
 	else
 	{
-		//if(as != GlobalVariables::MoveStyle)
+		//if(as != GV::MoveStyle)
 		//{
 		//	mKeyStatus.mGoMouseDown = false;
 		//}
 		//	非鼠标点取，则取消移动
-		if(as == GlobalVariables::TheOneMoveAS && !mKeyStatus.mGoMouseDown)
+		if(as == GV::TheOneMoveAS && !mKeyStatus.mGoMouseDown)
 		{
-			if(!GlobalVariables::TheOneJumping)
-				GObject::G_TheOne->playAnimation(GlobalVariables::TheOneIdleAS,false);
+			if(!GV::TheOneJumping)
+				GObject::G_TheOne->playAnimation(GV::TheOneIdleAS,false);
 		}
 	}
 	return true;
@@ -509,7 +486,7 @@ bool ApplicationListener::moveKeyHandler(const OIS::KeyEvent &arg, bool isPresse
 	{
 		return true;
 	}
-	if(!GlobalVariables::PlayerPositionLocked)
+	if(!GV::PlayerPositionLocked)
 	{
 		moveKeyHandler(arg);
 		numKeyHandler(arg);
@@ -524,7 +501,7 @@ bool ApplicationListener::keyReleased(const OIS::KeyEvent &arg)
 	{
 		return true;
 	}
-	if(!GlobalVariables::PlayerPositionLocked)
+	if(!GV::PlayerPositionLocked)
 	{
 		moveKeyHandler(arg,false);
 		numKeyHandler(arg,false);
@@ -573,19 +550,19 @@ bool ApplicationListener::mouseMoved(const OIS::MouseEvent &arg)
 	{
 		return true;
 	}
-	if(!GlobalVariables::PlayerCameraLocked)
+	if(!GV::PlayerCameraLocked)
 	{
 		//	移动摄像机
 		Vector3 camPos = mSceneMgr->getCamera("PlayerCamera")->getPosition();
-		if(arg.state.Z.rel > 0 && camPos.y > GlobalVariables::CameraZoomMin)
+		if(arg.state.Z.rel > 0 && camPos.y > GV::CameraZoomMin)
 		{
-			camPos.y -= GlobalVariables::CameraZoomStep;
-			camPos.z -= GlobalVariables::CameraZoomStep;
+			camPos.y -= GV::CameraZoomStep;
+			camPos.z -= GV::CameraZoomStep;
 		}
-		else if(arg.state.Z.rel < 0 && camPos.y < GlobalVariables::CameraZoomMax)
+		else if(arg.state.Z.rel < 0 && camPos.y < GV::CameraZoomMax)
 		{
-			camPos.y += GlobalVariables::CameraZoomStep;
-			camPos.z += GlobalVariables::CameraZoomStep;
+			camPos.y += GV::CameraZoomStep;
+			camPos.z += GV::CameraZoomStep;
 		}
 		mSceneMgr->getCamera("PlayerCamera")->setPosition(camPos);
 
@@ -610,17 +587,21 @@ bool ApplicationListener::mouseMoved(const OIS::MouseEvent &arg)
 			}
 			mPlayerNode->yaw( Degree(stepX), Node::TS_WORLD);
 
-			if((GlobalVariables::CameraPitchCurrent > GlobalVariables::CameraPitchMin && stepY < 0) ||
-				(GlobalVariables::CameraPitchCurrent < GlobalVariables::CameraPitchMax && stepY > 0))
+			/*	if the camera picthing is not locked */
+			if(GV::PlayerCameraPicthLocked == false)
 			{
-				mCameraNode->pitch( Degree(stepY), Node::TS_LOCAL);
-				GV::CameraPitchCurrent += stepY;
+				if((GV::CameraPitchCurrent > GV::CameraPitchMin && stepY < 0) ||
+					(GV::CameraPitchCurrent < GV::CameraPitchMax && stepY > 0))
+				{
+					mCameraNode->pitch( Degree(stepY), Node::TS_LOCAL);
+					GV::CameraPitchCurrent += stepY;
 
-				/*	set the visible of the one if the camera is too low */
-				if(GV::CameraPitchCurrent >= 120.0)
-					mTheOneNode->setVisible(false);
-				else
-					mTheOneNode->setVisible(true);
+					/*	set the visible of the one if the camera is too low */
+					if(GV::CameraPitchCurrent >= 120.0)
+						mTheOneNode->setVisible(false);
+					else
+						mTheOneNode->setVisible(true);
+				}
 			}
 
 			GObject::G_TheOne->mSceneNode->yaw( -Degree(stepX), Node::TS_WORLD);

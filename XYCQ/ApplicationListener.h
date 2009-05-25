@@ -109,8 +109,6 @@ public:
 	void updateJump(const FrameEvent &evt);
 	void updateStats();
 	void showDebugOverlay(bool show);
-
-	Real getTerrainHeight(Real x,Real z,void *extra=0);
 private:
 	void onLButtonDown(const OIS::MouseEvent &arg);
 	void onRButtonDown(const OIS::MouseEvent &arg);
@@ -138,9 +136,6 @@ private:
 	//	control variables
 	bool mContinue;
 	tKeyStatus mKeyStatus;
-
-	//	the ray query
-	RaySceneQuery *mRaySceneQuery;
 };
 
 #endif
