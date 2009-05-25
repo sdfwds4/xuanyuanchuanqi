@@ -397,21 +397,40 @@ namespace OgreMax
 			mPGMgr->setTreePage(bat,imp);
 			mPGMgr->setTreePageLoader();
 		}
+		inline void setPGTree(Ogre::Vector2 &bat)
+		{
+			mPGMgr->setTreeBatchPage(bat);
+			mPGMgr->setTreePageLoader();
+		}
 		inline void setPGTree(Ogre::Vector2 &bat,Ogre::Vector2 &imp, Forests::TBounds &bounds)
 		{
 			mPGMgr->setTreePage(bat,imp);
 			mPGMgr->setTreePageLoader(bounds);
 		}
-
+		inline void setPGTree(Ogre::Vector2 &bat, Forests::TBounds &bounds)
+		{
+			mPGMgr->setTreeBatchPage(bat);
+			mPGMgr->setTreePageLoader(bounds);
+		}
 		/*	set PG bush	*/
 		inline void setPGBush(Ogre::Vector2 &bat,Ogre::Vector2 &imp, Forests::TBounds &bounds)
 		{
 			mPGMgr->setBushPage(bat,imp);
 			mPGMgr->setBushPageLoader(bounds);
 		}
+		inline void setPGBush(Ogre::Vector2 &bat, Forests::TBounds &bounds)
+		{
+			mPGMgr->setBushBatchPage(bat);
+			mPGMgr->setBushPageLoader(bounds);
+		}
 		inline void setPGBush(Ogre::Vector2 &bat,Ogre::Vector2 &imp)
 		{
 			mPGMgr->setBushPage(bat,imp);
+			mPGMgr->setBushPageLoader();
+		}
+		inline void setPGBush(Ogre::Vector2 &bat)
+		{
+			mPGMgr->setBushBatchPage(bat);
 			mPGMgr->setBushPageLoader();
 		}
 
