@@ -36,12 +36,6 @@ private:
 	void windowResized(RenderWindow *rw);
 	void windowClosed(RenderWindow *rw);
 
-	//	get the height of terrain, used by the PG engine
-	Real __cdecl getTerrainHeight(Real x, Real z, void *extra)
-	{
-		return mListener->getTerrainHeight(x,z);
-	}
-
 	Root *mRoot;
 	OIS::Keyboard *mKeyboard;
 	OIS::Mouse *mMouse;

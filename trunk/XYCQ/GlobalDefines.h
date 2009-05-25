@@ -39,6 +39,9 @@ enum AnimationStatus
 	AS_NUM
 };
 
+//	the ray query
+static Ogre::RaySceneQuery *raySceneQuery;
+
 #ifndef	GLOBAL_VARIABLE
 #define	GLOBAL_VARIABLE
 typedef	struct GlobalVariables
@@ -57,6 +60,7 @@ typedef	struct GlobalVariables
 	
 	//	Ëø¶¨
 	static bool PlayerCameraLocked;
+	static bool PlayerCameraPicthLocked;
 	static bool PlayerPositionLocked;
 
 	//	THE ONE ÊôÐÔ
@@ -102,6 +106,25 @@ typedef	struct GlobalVariables
 		{
 			TheOneJump_t = 0;
 		}
+	}
+	static Real getTerrainHeight(Real x,Real z,void *extra=0)
+	{
+		Ray ray(Vector3(x,5000.0f,z),Vector3::NEGATIVE_UNIT_Y);
+		raySceneQuery->setRay(ray);
+		RaySceneQueryResult &rs = raySceneQuery->execute();
+		RaySceneQueryResult::iterator itr = rs.begin();
+		
+		Real height = -1;
+		for(;itr<rs.end();itr++)
+		{
+			if(itr->worldFragment)
+			{
+				height = itr->worldFragment->singleIntersection.y;
+				break;
+			}
+		}
+		//raySceneQuery->clearResults();
+		return height;
 	}
 } GV;
 

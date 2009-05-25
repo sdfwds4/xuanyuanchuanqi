@@ -19,6 +19,7 @@ float GV::CameraPitchCurrent = 45.0;
 
 /*	lock player's status */
 bool GV::PlayerCameraLocked = false;
+bool GV::PlayerCameraPicthLocked = false;
 bool GV::PlayerPositionLocked = false;
 
 /*	the one's infos */

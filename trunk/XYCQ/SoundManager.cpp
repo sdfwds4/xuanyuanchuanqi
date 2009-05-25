@@ -12,7 +12,7 @@ SoundManager::SoundManager(Ogre::Camera *cam,int chn)
 	resultCheck(mFmodResult);
 	mFmodResult = mSystem->init(mMaxChannels,FMOD_INIT_NORMAL|FMOD_INIT_3D_RIGHTHANDED,0);
 	resultCheck(mFmodResult);
-	mSystem->set3DSettings(1.0,10.0,0.5);
+	mSystem->set3DSettings(1.0,GV::UnitsPerMeter,1.0);
 
 	m3DListener = new t3DListener(cam);
 }
