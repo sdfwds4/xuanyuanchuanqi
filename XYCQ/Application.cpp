@@ -11,7 +11,20 @@ mCEGUIRenderer(0),mCEGUISystem(0),mCEGUISheet(0)
 
 Application::~Application(void)
 {
-	//	CEGUI
+	if(mListener)
+	{
+		delete mListener;
+		mListener = 0;
+	}
+	if(CollisionManager::getSingletonPtr())
+	{
+		delete CollisionManager::getSingletonPtr();
+	}
+	if(mSoundMgr)
+	{
+		delete mSoundMgr;
+		mSoundMgr = 0;
+	}
 	if(mCEGUISheet)
 	{
 		CEGUI::WindowManager::getSingletonPtr()->destroyWindow(mCEGUISheet);
@@ -26,12 +39,10 @@ Application::~Application(void)
 		delete mCEGUIRenderer;
 		mCEGUIRenderer = 0;
 	}
-
 	if(mParticle)
 	{
 		mSceneMgr->destroyParticleSystem(mParticle);
 	}
-	// OIS
 	if(mKeyboard)
 	{
 		mInputManager->destroyInputObject(mKeyboard);
@@ -51,13 +62,6 @@ Application::~Application(void)
 	{
 		delete mScene;
 		mScene = 0;
-	}
-
-	// 系统
-	if(mListener)
-	{
-		delete mListener;
-		mListener = 0;
 	}
 	if(mRoot)
 	{
@@ -317,10 +321,8 @@ void Application::setupCEGUI()
 //	FMOD soundmanager
 void Application::setupSoundManager()
 {
-	mSoundMgr = SoundManager::createInstance(mCamera);
-	mBackSound = mSoundMgr->createSound("BackGround.mp3",true,false,0,FMOD_CREATESTREAM);
-	mSoundMgr->playSound(mBackSound);
-	mBackSound->mChannel->setVolume(GV::BackSoundVolume);
+	mSoundMgr = new SoundManager(mCamera);
+	mBackSound = mSoundMgr->createSound("BackGround.mp3",true,false,0,true,FMOD_CREATESTREAM);
 }
 
 //	create ogremax scene
@@ -410,8 +412,12 @@ void Application::createFrameListener()
 	mRoot->addFrameListener(mListener);
 }
 
-// 启动渲染循环
 void Application::startRenderLoop()
 {
+	/*	play the back music */
+	mSoundMgr->playSound(mBackSound);
+	mSoundMgr->setMusicEnvVolume(GV::MusicEnvVolume);
+	mSoundMgr->setSoundEffVolume(GV::SoundEffVolume);
+	/*	start the render loop */
 	mRoot->startRendering();
 }

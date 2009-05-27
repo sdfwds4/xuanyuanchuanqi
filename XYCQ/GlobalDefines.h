@@ -85,7 +85,8 @@ typedef	struct GlobalVariables
 	/*	system settings */
 	static float Gravity;
 	static float UnitsPerMeter;
-	static float BackSoundVolume;
+	static float MusicEnvVolume;
+	static float SoundEffVolume;
 
 	static inline float Meter(float meter)
 	{

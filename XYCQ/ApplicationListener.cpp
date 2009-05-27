@@ -243,31 +243,37 @@ bool ApplicationListener::frameStarted(const FrameEvent &evt)
 	mKeyboard->capture();
 	mMouse->capture();
 
-	//	状态更新
+	/*	opcode collide */
 	mCollContext->collide(evt.timeSinceLastFrame);
 	
 	updatePlayerStatus(evt);
 	updateMouseDownEffect(evt);
 	
-	//	跳跃重力作用更新
-	if(GV::TheOneJumping)
-	{
-		updateJump(evt);
-	}
+	/*	update the jumping status */
+	if(GV::TheOneJumping)updateJump(evt);
 
-	//	更新max场景
-	if(mScene)
-		mScene->Update(evt.timeSinceLastFrame);
+	/*	update the max scene */
+	if(mScene)mScene->Update(evt.timeSinceLastFrame);
 
-	//	更新3D声音
-	if(mSoundMgr)
-		mSoundMgr->update();
+	/*	update the sound system */
+	if(mSoundMgr)mSoundMgr->update();
 
 	return mContinue;
 }
 bool ApplicationListener::frameEnded(const FrameEvent &evt)
 {
+	/*	update the debug status */
 	updateStats();
+	if(mKeyboard->isKeyDown(OIS::KC_ADD))
+	{
+		if(GV::MusicEnvVolume < 1.0)GV::MusicEnvVolume += 0.05;
+		mSoundMgr->setMusicEnvVolume(GV::MusicEnvVolume);
+	}
+	if(mKeyboard->isKeyDown(OIS::KC_SUBTRACT))
+	{
+		if(GV::MusicEnvVolume > 0.0)GV::MusicEnvVolume -= 0.05;
+		mSoundMgr->setMusicEnvVolume(GV::MusicEnvVolume);
+	}
 	return true;
 }
 bool ApplicationListener::numKeyHandler(const OIS::KeyEvent &arg, bool isPressed)
@@ -324,7 +330,8 @@ bool ApplicationListener::systemKeyHandler(const OIS::KeyEvent &arg,bool isPress
 				mDebugOverlay->show();
 			break;
 		case OIS::KC_SPACE:
-			if(as != AS_JUMP && as != AS_JUMP_UP && as!= AS_JUMP_DOWN && as != AS_JUMP_LAND)
+			if(!GV::PlayerPositionLocked && as != AS_JUMP && 
+				as != AS_JUMP_UP && as!= AS_JUMP_DOWN && as != AS_JUMP_LAND)
 			{
 				GV::InitJump(GV::TheOneHeight,false);
 				GV::TheOneJumping = true;

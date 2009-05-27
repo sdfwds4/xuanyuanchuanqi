@@ -47,7 +47,7 @@ struct tNodeSound
 	{
 		mNode = node;
 		mSound = 0;
-		mChannel = 0;
+		mChannel = 0;	/* just be used when playing the sound */
 		mIs3D = is3d;
 		
 		if(node)
@@ -127,39 +127,36 @@ struct t3DListener
 	FMOD_VECTOR *mForward;
 	FMOD_VECTOR *mUp;
 };
-class SoundManager
+class SoundManager : public Singleton<SoundManager>
 {
 public:
-	void resultCheck(FMOD_RESULT res)
-	{
-		if(res != FMOD_OK)
-		{
-			exit(-1);
-		}
-	}
-	tNodeSound* createSound(char *fileName,bool isLoop = false, bool is3D = true,
-		Ogre::SceneNode *node = 0,							//	模型节点
-		FMOD_MODE createType = FMOD_CREATECOMPRESSEDSAMPLE,	//	文件加载方式
-		FMOD_MODE relative = FMOD_3D_WORLDRELATIVE,			//	3D坐标相关								
-		FMOD_MODE rolloff = FMOD_3D_LOGROLLOFF);			//	衰减方式
+	SoundManager(Ogre::Camera *cam = 0,int chn = 100);
+	~SoundManager(void);
+	static SoundManager* getSingletonPtr();
+	static SoundManager getSingleton();
+
+	tNodeSound* createSound(char *fileName,bool isLoop = false, bool is3D = true,Ogre::SceneNode *node = 0,
+		bool isMusicEnv = false,FMOD_MODE createType = FMOD_CREATECOMPRESSEDSAMPLE,
+		FMOD_MODE relative = FMOD_3D_WORLDRELATIVE,FMOD_MODE rolloff = FMOD_3D_LOGROLLOFF);
 
 	void playSound(tNodeSound *nodeSound);
 	void releaseSound(tNodeSound *nodeSound);
 	void update();
-
-	//	外部创建与访问方法
-	static SoundManager* createInstance(Ogre::Camera *cam = 0,int chn = 100);
-	static SoundManager* getSingletonPtr();
-	static SoundManager getSingleton();
+	/*	check the fmod function callbacks */
+	void resultCheck()
+	{
+		if(mFmodResult != FMOD_OK)exit(-1);
+	}
+	void setMusicEnvVolume(float vol);
+	void setSoundEffVolume(float vol);
 private:
 	System *mSystem;
+	Camera *mCamera;
+	int mMaxChannels;
+	SoundGroup *mMusicEnv;
+	SoundGroup *mSoundEff;
 	t3DListener *m3DListener;
 	FMOD_RESULT mFmodResult;
-	int mMaxChannels;
-	std::vector<tNodeSound *> mSoundPool;
 
-	//	单实例与其构建
-	static SoundManager *ms_Instance;
-	SoundManager(Ogre::Camera *cam = 0,int chn = 100);
-	~SoundManager(void);
+	std::vector<tNodeSound *> mSoundPool;
 };
