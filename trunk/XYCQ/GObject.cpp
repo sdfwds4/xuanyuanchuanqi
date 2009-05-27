@@ -154,7 +154,7 @@ void GObject::addAnimation(AnimationStatus as, char *soundFile)
 	{
 		anist->setLoop(isloop);
 		tNodeSound *nsd = SoundManager::getSingletonPtr()->createSound(soundFile,isloop,true,
-			mSceneNode,FMOD_CREATECOMPRESSEDSAMPLE);
+			mSceneNode,false,FMOD_CREATECOMPRESSEDSAMPLE);
 		tsanim = new tSoundAnimation(anist,as,true,nsd);
 		mAnimation.at(as) = tsanim;
 	}

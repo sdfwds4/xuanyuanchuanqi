@@ -2,9 +2,10 @@
 #include "GlobalDefines.h"
 
 /*	environment settings */
-float GV::UnitsPerMeter = 100.0;
+float GV::UnitsPerMeter = 10.0;
 float GV::Gravity = GV::Meter(9.8);
-float GV::BackSoundVolume = 0.2;
+float GV::MusicEnvVolume = 0.2;
+float GV::SoundEffVolume = 1.0;
 
 /*	camera zoom setting */
 float GV::CameraZoomStep = GV::Meter(0.5);

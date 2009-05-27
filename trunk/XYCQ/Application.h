@@ -32,7 +32,7 @@ private:
 	void createCollision();
 	void startRenderLoop();
 
-	//	´°¿Ú¼àÌý
+	/*	window event */
 	void windowResized(RenderWindow *rw);
 	void windowClosed(RenderWindow *rw);
 

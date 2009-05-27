@@ -1,27 +1,34 @@
 #include "SoundManager.h"
 
-SoundManager *SoundManager::ms_Instance = 0;
+template<>SoundManager *Singleton<SoundManager>::ms_Singleton = 0;
 
 SoundManager::SoundManager(Ogre::Camera *cam,int chn)
 {
-	mMaxChannels				= chn;
-	mFmodResult					= FMOD_OK;
+	mCamera = cam;
+	mMaxChannels = chn;
+	mFmodResult = FMOD_OK;
 	
-	//	创建、初始化声音系统
+	/*	create and init the sound system */
 	mFmodResult = FMOD::System_Create(&mSystem);
-	resultCheck(mFmodResult);
+	resultCheck();
+
 	mFmodResult = mSystem->init(mMaxChannels,FMOD_INIT_NORMAL|FMOD_INIT_3D_RIGHTHANDED,0);
-	resultCheck(mFmodResult);
+	resultCheck();
+
 	mSystem->set3DSettings(1.0,GV::UnitsPerMeter,1.0);
+
+	/*	create the music env and sound eff sound groups */
+	mFmodResult = mSystem->createSoundGroup("music environment",&mMusicEnv);
+	resultCheck();
+
+	mFmodResult = mSystem->createSoundGroup("sound effective",&mSoundEff);
+	resultCheck();
 
 	m3DListener = new t3DListener(cam);
 }
 
 SoundManager::~SoundManager(void)
 {
-	mFmodResult = mSystem->release();
-	resultCheck(mFmodResult);
-
 	if(m3DListener)
 	{
 		delete m3DListener;
@@ -31,29 +38,24 @@ SoundManager::~SoundManager(void)
 	{
 		delete (*itr);
 	}
+	mMusicEnv->release();
+	mSoundEff->release();
+	mFmodResult = mSystem->release();
+	resultCheck();
 	mSoundPool.clear();
-}
-
-SoundManager* SoundManager::createInstance(Ogre::Camera *cam,int chn)
-{
-	if(0 == ms_Instance)
-	{
-		ms_Instance = new SoundManager(cam,chn);
-	}
-	return ms_Instance;
 }
 
 SoundManager *SoundManager::getSingletonPtr()
 {
-	return ms_Instance;
+	return ms_Singleton;
 }
 SoundManager SoundManager::getSingleton()
 {
-	return *ms_Instance;
+	assert(ms_Singleton); return (*ms_Singleton);
 }
 
-//	增加声音
-tNodeSound *SoundManager::createSound(char *fileName,bool isLoop, bool is3D,Ogre::SceneNode *node,
+/*	create sound and add it to the sound pool */
+tNodeSound *SoundManager::createSound(char *fileName,bool isLoop, bool is3D,Ogre::SceneNode *node,bool isMusicEnv,
 									  FMOD_MODE createType,FMOD_MODE relative,FMOD_MODE rolloff)
 {
 	tNodeSound *nodeSound = new tNodeSound(node,is3D);
@@ -73,47 +75,64 @@ tNodeSound *SoundManager::createSound(char *fileName,bool isLoop, bool is3D,Ogre
 		mode |= FMOD_HARDWARE;
 
 	mFmodResult = mSystem->createSound(fileName,mode|createType|relative|rolloff,0,&nodeSound->mSound);
-	resultCheck(mFmodResult);
-	
+	resultCheck();
+
+	/*	judge the type of the sound */
+	if(isMusicEnv)
+		nodeSound->mSound->setSoundGroup(mMusicEnv);
+	else
+		nodeSound->mSound->setSoundGroup(mSoundEff);
+
+	/*	add to the sound pool */
 	mSoundPool.push_back(nodeSound);
 
 	return nodeSound;
 }
-//	播放声音
+/*	play the sound */
 void SoundManager::playSound(tNodeSound *nodeSound)
 {
 	mFmodResult = mSystem->playSound(FMOD_CHANNEL_FREE,nodeSound->mSound,false,&nodeSound->mChannel);
-	resultCheck(mFmodResult);
+	resultCheck();
 }
-//	释放声音
+/*	release the sound */
 void SoundManager::releaseSound(tNodeSound *nodeSound)
 {
 	mFmodResult = nodeSound->mChannel->stop();
-	resultCheck(mFmodResult);
+	resultCheck();
 	mFmodResult = nodeSound->mSound->release();
-	resultCheck(mFmodResult);
+	resultCheck();
 
 	std::vector<tNodeSound *>::iterator itr;
 	itr = std::find(mSoundPool.begin(),mSoundPool.end(),nodeSound);
 	mSoundPool.erase(itr);
 }
 
-//	更新声音
 void SoundManager::update()
 {
-	//	听者
+	/*	update the status of listener */
 	m3DListener->update();
 	mFmodResult = mSystem->set3DListenerAttributes(m3DListener->id,m3DListener->mPosition,m3DListener->mVelocity,m3DListener->mForward,m3DListener->mUp);
-	resultCheck(mFmodResult);
+	resultCheck();
 
-	//	声源
+	/*	update the 3d sound source */
 	std::vector<tNodeSound *>::iterator itr = mSoundPool.begin();
 	for(;itr<mSoundPool.end();itr++)
 	{
 		(*itr)->update();
 	}
 
-	//	系统
+	/*	update the system, necessary for 3d sounds and virtual channels etc. */
 	mFmodResult = mSystem->update();
-	resultCheck(mFmodResult);
+	resultCheck();
+}
+
+void SoundManager::setMusicEnvVolume(float vol)
+{
+	mFmodResult = mMusicEnv->setVolume(vol);
+	resultCheck();
+}
+void SoundManager::setSoundEffVolume(float vol)
+{
+	mFmodResult = mSoundEff->setVolume(vol);
+	resultCheck();
 }
